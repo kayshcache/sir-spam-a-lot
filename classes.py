@@ -13,11 +13,14 @@ class TwilioClient:
         print(self.URI)
         print(self.account_sid)
 
-    def post_request(self):
+    def post_message(self, _whatsapp, _body, _number):
         message_data = {
-                'Body': '*This has less spam in it*',
+                'Body': _body,
                 'From': 'whatsapp:+14155238886',
-                'To': 'whatsapp:+61406257985'}
+                'To': f'whatsapp:{_number}'}
+        if _whatsapp == False:
+            message_data['From'] = '+12162796757'
+            message_data['To'] = _number
         response = requests.post(
                 self.URI,
                 data=message_data,

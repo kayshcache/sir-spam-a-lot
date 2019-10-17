@@ -15,8 +15,11 @@ client = Client(account_sid, auth_token)
 special_pic_one = os.environ['SPECIAL_ONE']
 special_pic_two = os.environ['SPECIAL_TWO']
 
+whatsapp = True
+message_body = '~Spam~'
+message_to = '+61406257985'
 twilio_client = TwilioClient(account_sid, auth_token)
-#twilio_client.post_request()
+twilio_client.post_message(True, message_body, message_to)
 
 def send_whatsapp_media():
     message = client.messages \
@@ -30,7 +33,7 @@ def send_whatsapp_media():
 
 @app.route('/')
 def display_homepage():
-    html = '<h1>Hello, from Greenwich Village Accommodation, North Shore</h1>'
+    html = '<h1>Hello from The Royal Court of Spamelot</h1>'
     html += '<a href="whatsapp://send?phone=+14155238886&text=scientific-parallel">Follow this link on your phone</a>'
     messages = client.messages.list(limit=20)
     html += '<h2>The last 20 messages sent through this service</h2><ol>'
