@@ -35,14 +35,14 @@ def display_homepage():
     html += '</ol>'
     return html
 
-@app.route('/sms', methods=['GET', 'POST'])
+@app.route('/webhook', methods=['GET', 'POST'])
 def sms_ahoy_reply():
     """Respond to incoming messages with a receipt SMS."""
     # Start our response
     resp = MessagingResponse()
     message = Message()
     message.media(special_pic_two)
-    message.body('Spam ahoy!')
+    message.body('What\'s app, doc?')
     resp.append(message)
     return str(resp)
 
