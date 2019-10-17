@@ -4,6 +4,7 @@ import os
 from flask import Flask, request
 from twilio.twiml.messaging_response import Body, Media, Message, MessagingResponse
 from twilio.rest import Client
+from classes import TwilioClient
 
 app = Flask(__name__)
 
@@ -13,6 +14,9 @@ auth_token = os.environ['TWILIO_AUTH_TOKEN']
 client = Client(account_sid, auth_token)
 special_pic_one = os.environ['SPECIAL_ONE']
 special_pic_two = os.environ['SPECIAL_TWO']
+
+twilio_client = TwilioClient(account_sid, auth_token)
+#twilio_client.post_request()
 
 def send_whatsapp_media():
     message = client.messages \

@@ -25,12 +25,12 @@ class TwilioClient:
         print(response)
 
 
-account_sid = os.environ['TWILIO_ACCOUNT_SID']
-auth_token = os.environ['TWILIO_AUTH_TOKEN']
+#account_sid = os.environ['TWILIO_ACCOUNT_SID']
+#auth_token = os.environ['TWILIO_AUTH_TOKEN']
 # print(os.environ['TWILIO_ACCOUNT_SID'])
 
-twilio_client = TwilioClient(account_sid, auth_token)
-twilio_client.post_request()
+#twilio_client = TwilioClient(account_sid, auth_token)
+#twilio_client.post_request()
 
 def check_get_response(get_response_object):
     if get_response_object:
