@@ -21,6 +21,11 @@ message_to = '+61406257985'
 twilio_client = TwilioClient(account_sid, auth_token)
 #twilio_client.post_message(True, message_body, message_to)
 
+def give_me_form():
+    form_html = '<form method="POST"><input name="text">' \
+            '<input type="submit"></form>'
+    return form_html
+
 def send_whatsapp_media():
     message = client.messages \
     .create(
@@ -33,10 +38,10 @@ def send_whatsapp_media():
 
 @app.route('/')
 def display_homepage():
-
     html = '<h1>Hello from The Royal Court of Spamelot</h1>'
     html += '<a href="whatsapp://send?phone=+14155238886' \
             '&text=scientific-parallel">Follow this link on your phone</a>'
+    html += give_me_form()
     messages = client.messages.list(limit=20)
     list_items = map(lambda record:
             f'<li>{record.sid}: {record.status}</li>',
@@ -45,6 +50,12 @@ def display_homepage():
     html += f'<h2>The last 20 messages sent through this service</h2>' \
             f'<ol>{list_items}</ol>'
     return html
+
+@app.route('/', methods=['POST'])
+def my_form_post():
+    text = request.form['text']
+    processed_text = text.upper()
+    return processed_text
 
 @app.route('/webhook', methods=['GET', 'POST'])
 def sms_ahoy_reply():
