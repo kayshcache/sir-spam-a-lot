@@ -39,7 +39,12 @@ def give_me_form():
 def display_homepage():
     html = '<h1>Hello from The Royal Court of Spamelot</h1>'
     html += '<a href="whatsapp://send?phone=+14155238886' \
-            '&text=scientific-parallel">Follow this link on your phone</a>'
+            '&text=join%20scientific-parallel">You must join ' \
+            'the sandbox first - click this link on your phone.</a>'
+    html += '<h2>Below form can send a generic message</h2>'
+    html += '<p>Once a WhatsApp account has joined the Sandbox, ' \
+            'it can receive a generic message anytime. '\
+            'Please go <a href="/whatsapp-media">here</a> to get some spam.</p>'
     html += give_me_form()
     messages = client.messages.list(limit=20)
     list_items = map(lambda record:
@@ -75,7 +80,7 @@ def sms_ahoy_reply():
     message.media(special_pic_two)
     message.body('_Spam_ is, therefore _I_ am.')
     resp.append(message)
-    return str(resp)
+    return
 
 @app.route('/whatsapp')
 def show_form_for_whatsapp():
@@ -90,11 +95,15 @@ def send_whatsapp_message():
         'To': request.form['text'],
         }
     response = my_twilio_client.post_message(message_data)
-    return f'<p>Spam has been dutifully sent to</p>'
+    return
 
 @app.route('/whatsapp-media')
 def show_form_for_whatsapp_media():
-    return give_me_form()
+    heading = '<h1>Send yourself something nice from here</h1>'
+    paragraph = '<p>Here, you need to have joined the sandbox ' \
+            'and have either sent a message or joined in the ' \
+            'last 24 hours to receive this gift.</p>'
+    return heading + paragraph + give_me_form()
 
 @app.route('/whatsapp-media', methods=['GET', 'POST'])
 def send_whatsapp_media():

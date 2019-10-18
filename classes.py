@@ -27,8 +27,6 @@ class TwilioClient:
         self.URI = self.URL + account_sid + '/Messages.json'
         self.WHATSAPP_SANDBOX_NUM = 'whatsapp:+14155238886'
         self.SMS_NUM = '+12162796757'
-        print(self.URI)
-        print(self.account_sid)
 
     def post_message(self, message_data):
         """Method for POST requests to Twilio endpoint
