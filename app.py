@@ -33,14 +33,15 @@ def send_whatsapp_media():
 
 @app.route('/')
 def display_homepage():
+
     html = '<h1>Hello from The Royal Court of Spamelot</h1>'
     html += '<a href="whatsapp://send?phone=+14155238886&text=scientific-parallel">Follow this link on your phone</a>'
     messages = client.messages.list(limit=20)
-    html += '<h2>The last 20 messages sent through this service</h2><ol>'
-    for record in messages:
-        html += f'<li>{str(record)[1:-1]}</li>'
-        html += f'<ul><li>{record.status}</li></ul>'
-    html += '</ol>'
+    list_items = map(lambda record:
+            f'<li>{record.sid}: {record.status}</li>',
+            messages)
+    list_items = ''.join(list_items)
+    html += f'<h2>The last 20 messages sent through this service</h2><ol>{list_items}</ol>'
     return html
 
 @app.route('/webhook', methods=['GET', 'POST'])
