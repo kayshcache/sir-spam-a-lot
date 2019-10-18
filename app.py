@@ -19,7 +19,7 @@ whatsapp = True
 message_body = '~Spam~'
 message_to = '+61406257985'
 twilio_client = TwilioClient(account_sid, auth_token)
-twilio_client.post_message(True, message_body, message_to)
+#twilio_client.post_message(True, message_body, message_to)
 
 def send_whatsapp_media():
     message = client.messages \
@@ -39,6 +39,7 @@ def display_homepage():
     html += '<h2>The last 20 messages sent through this service</h2><ol>'
     for record in messages:
         html += f'<li>{str(record)[1:-1]}</li>'
+        html += f'<ul><li>{record.status}</li></ul>'
     html += '</ol>'
     return html
 
@@ -49,7 +50,7 @@ def sms_ahoy_reply():
     resp = MessagingResponse()
     message = Message()
     message.media(special_pic_two)
-    message.body('What\'s app, doc?')
+    message.body('_spam_ is, therefore _I_ am.')
     resp.append(message)
     return str(resp)
 
