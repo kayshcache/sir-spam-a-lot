@@ -1,8 +1,5 @@
-import http.client
-import pprint
 import json
 import requests
-import os
 
 class TwilioClient:
     """Class for making HTTP requests to Twilio REST API
@@ -28,10 +25,12 @@ class TwilioClient:
         self.auth_token = auth_token
         self.URL = 'https://api.twilio.com/2010-04-01/Accounts/'
         self.URI = self.URL + account_sid + '/Messages.json'
+        self.WHATSAPP_SANDBOX_NUM = 'whatsapp:+14155238886'
+        self.SMS_NUM = '+12162796757'
         print(self.URI)
         print(self.account_sid)
 
-    def post_message(self, whatsapp, body, number):
+    def post_message(self, message_data):
         """Method for POST requests to Twilio endpoint
 
         Args:
@@ -40,19 +39,18 @@ class TwilioClient:
                 with False as the first argument.
             body: String of the body text
             number: String E167 number formatted internation phone number
+            message_data: Dictionary containing body, from, to, and a URL
+                image media if required.
 
         Returns:
             response: The object returned by Twilio REST API is a
             JSON to dictionary object.
             
         """
-        message_data = {
-                'Body': body,
-                'From': 'whatsapp:+14155238886',
-                'To': f'whatsapp:{number}'}
-        if whatsapp == False:
-            message_data['From'] = '+12162796757'
-            message_data['To'] = number
+        message_data['From'] = self.SMS_NUM
+        if message_data['WhatsApp'] == True:
+            message_data['From'] = self.WHATSAPP_SANDBOX_NUM
+            message_data['To'] = f"whatsapp:{message_data['To']}"
         response = requests.post(
                 self.URI,
                 data=message_data,
@@ -60,46 +58,14 @@ class TwilioClient:
         return response
 
 
-#account_sid = os.environ['TWILIO_ACCOUNT_SID']
-#auth_token = os.environ['TWILIO_AUTH_TOKEN']
-# print(os.environ['TWILIO_ACCOUNT_SID'])
-
-#twilio_client = TwilioClient(account_sid, auth_token)
-#twilio_client.post_request()
-
-def check_get_response(get_response_object):
-    if get_response_object:
-        print('Response OK')
-    else:
-        print('Fail, dude')
+class HtmlCssBuilder:
+    """Class for producing bits of HTML & CSS"""
+    def __init__(self):
+        pass
 
 
-#response = requests.get('https://api.twilio.com')
-#check_get_response(response)
+class MessageHandler:
+    """Class for generating messages of all kinds"""
+    def __init__(self):
+        pass
 
-
-#connection = http.client.HTTPSConnection('api.twilio.com')
-
-def get_headers():
-    connection.request('GET', '/')
-    response = connection.getresponse()
-    headers = response.getheaders()
-    pp = pprint.PrettyPrinter(indent=2)
-    pp.pprint(f'Headers: {headers}')
-    print(f'Status: {response.status} and reason: {response.reason}')
-
-#get_headers()
-
-def post_stuff():
-    connection = http.client.HTTPSConnection('www.httpbin.org')
-    headers = {'Content-type': 'application/json'}
-
-    foo = {'text': 'Hello HTTP'}
-    json_data = json.dumps(foo)
-
-    connection.request('POST', '/post', json_data, headers)
-    response = connection.getresponse()
-    print(response.read().decode())
-
-#post_stuff()
-#connection.close()
