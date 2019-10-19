@@ -1,8 +1,7 @@
 # /usr/bin/env python
 
-import os
+from os import environ
 from flask import Flask, request, redirect
-from time import sleep as snooZZZe
 from twilio.twiml.messaging_response import Body, Media, Message, MessagingResponse
 from twilio.rest import Client
 from .classes import TwilioClient
@@ -11,14 +10,15 @@ app = Flask(__name__)
 
 POSTBIN_ENDPOINT = 'https://postb.in/1571411865319-0266059697605'
 
-"""Global Constants"""
-account_sid = os.environ['TWILIO_ACCOUNT_SID']
-auth_token = os.environ['TWILIO_AUTH_TOKEN']
+"""Global Objects & Constants"""
+account_sid = environ['TWILIO_ACCOUNT_SID']
+auth_token = environ['TWILIO_AUTH_TOKEN']
 my_twilio_client = TwilioClient(account_sid, auth_token)# My handmade client class
 client = Client(account_sid, auth_token) # Does same and more, from Twilio REST API Package
-special_pic_one = os.environ['SPECIAL_ONE']
-special_pic_two = os.environ['SPECIAL_TWO']
+special_pic_one = environ['SPECIAL_ONE'] # Just another unconventional thing - links for pictures
+special_pic_two = environ['SPECIAL_TWO']
 STATUS_WEBHOOK = 'https://98497678.ngrok.io/webhook-status'
+
 
 def give_me_form():
     """Function for making the form
@@ -37,26 +37,35 @@ def give_me_form():
             '<input type="submit"></form>'
     return style_html + form_html
 
-def check_error_code(twilio_error_code):
-    if error_code == '63015':
+def check_error_code(error_code):
+    """Error check, looks for not registered number error"""
+    error_message = 'An ungnown error has occurred (no that\'s not a typo)'
+    if error_code == 63015:
+        print('Some')
         error_message = 'Channel Sandbox can only send messages to phone numbers' \
             ' that have joined the Sandbox'
-    return (False, error_message)
+    return error_message
 
 @app.route('/')
-def display_homepage(sid=None):
-    """Homepage displays debugging stuff and other stuff"""
+def display_homepage():
+    """Homepage displays debugging stuff and other stuff
+
+    Arguments:
+        sid: String
+    """
+    messages = client.messages.list(limit=20)
+    error_message = None
+    for msg in messages:
+        if msg.sid == request.args.get('sid'):
+            error_message = check_error_code(msg.error_code)
     html = '<h1>Hello from The Royal Court of Spamelot</h1>' \
             '<h2>Below form can send a generic message</h2>' \
-            '<a href="whatsapp://send?phone=+14155238886' \
+            '<p><a href="whatsapp://send?phone=+14155238886' \
             '&text=join%20scientific-parallel">You must join ' \
-            'the sandbox first - click this link on your phone.</a>' \
-            '<p>Once a WhatsApp account has joined the Sandbox, ' \
-            'it can receive a generic message anytime. '\
-            'Please go <a href="/whatsapp-media">here</a> to get some spam.</p>' + \
-            give_me_form()
-    messages = client.messages.list(limit=20)
-    print(request.args.get('sid'))
+            'the sandbox first - click this link on your phone.</a></p>'
+    if error_message is not None:
+        html += f'<strong>WARNING: {error_message}</strong>'
+    html += give_me_form()
     list_items = map(lambda record:
             f'<li>{record.sid}: {record.status}, {record.error_code}</li>',
             messages)
@@ -66,7 +75,8 @@ def display_homepage(sid=None):
     return html
 
 @app.route('/', methods=['POST'])
-def post_form():
+def post_message_for_homepage():
+    """Receive the phone number from the form and POST the message."""
     phone = request.form['text']
     message = client.messages \
     .create(
@@ -80,15 +90,12 @@ def post_form():
     message_status_output = f'<h3>Status for message SID: {message.sid}' \
             f'Delivery status: {message.status}' \
             f'Any errors: {message.error_code}</h3>'
-    # snooZZZe(1)
-#   print(status)
-    # print(message.__dict__)
     sid = message.sid
     return redirect(f"/?sid={message.sid}")
 
 @app.route('/webhook', methods=['GET', 'POST'])
-def sms_ahoy_reply():
-    """Respond to incoming messages with a receipt SMS."""
+def post_message_media_webhook():
+    """Respond to incoming messages with a MessageResponse instance."""
     # Start our response
     resp = MessagingResponse()
     message = Message()
@@ -98,20 +105,25 @@ def sms_ahoy_reply():
     return str(resp)
 
 @app.route('/webhook-status', methods=['GET', 'POST'])
-def hookup_status():
+def webhook_status():
+    """Listening for Webhook from Twilio"""
     status = request.values['MessageStatus']
     set_last_message_status(status)
     print(status)
     return 'no ham here'
 
 @app.route('/whatsapp')
-def show_form_for_whatsapp():
+def display_form_for_whatsapp():
     """WhatsApp send to your phone number."""
-    return give_me_form()
+    heading = '<h1>Send yourself something nice from here</h1>'
+    paragraph = '<p>Here, you need to have joined the sandbox ' \
+            'and have either sent a message or joined in the ' \
+            'last 24 hours to receive this gift.</p>'
+    return heading + paragraph + give_me_form()
 
 @app.route('/whatsapp', methods=['GET', 'POST'])
-def send_whatsapp_message():
-    """Receive form POST information for media message.""" 
+def post_whatsapp_message():
+    """Receive form POST information for media message."""
     message_body = '~Spam~'
     phone = request.form['text']
     message_data = {
@@ -120,29 +132,8 @@ def send_whatsapp_message():
         'To': phone
         }
     response = my_twilio_client.post_message(message_data)
-    return
-
-@app.route('/whatsapp-media')
-def show_form_for_whatsapp_media():
-    """WhatsApp media send to your phone number."""
-    heading = '<h1>Send yourself something nice from here</h1>'
-    paragraph = '<p>Here, you need to have joined the sandbox ' \
-            'and have either sent a message or joined in the ' \
-            'last 24 hours to receive this gift.</p>'
-    return heading + paragraph + give_me_form()
-
-@app.route('/whatsapp-media', methods=['GET', 'POST'])
-def send_whatsapp_media():
-    """Receive form POST information for media message."""
-    phone = request.form['text']
-    message = client.messages \
-    .create(
-         media_url=[special_pic_one],
-         from_='whatsapp:+14155238886',
-         body="I don't like spam!",
-         to=f'whatsapp:{phone}'
-     )
-    return message.status
+    print(response.text)
+    return redirect('/')
 
 if __name__ == '__main__':
   app.run(debug=True)
