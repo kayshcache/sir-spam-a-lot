@@ -17,6 +17,7 @@ my_twilio_client = TwilioClient(account_sid, auth_token)# My handmade client cla
 client = Client(account_sid, auth_token) # Does same and more, from Twilio REST API Package
 special_pic_one = os.environ['SPECIAL_ONE']
 special_pic_two = os.environ['SPECIAL_TWO']
+STATUS_WEBHOOK = 'https://45c8e5a2.ngrok.io/webhook-status'
 
 def give_me_form():
     """Function for making the form
@@ -71,12 +72,13 @@ def post_form():
          body='Hi Joe! Thanks for placing an order with us.' \
                  ' We’ll let you know once your order has been' \
                  ' processed and delivered. Your order number is O12235234',
+         status_callback=STATUS_WEBHOOK,
          to=f'whatsapp:{phone}'
      )
-    message_status_output = f'Status for message SID: {message.sid}\n', \
-            f'Delivery status: {message.status}\n' \
-            f'Any errors: {message.error_code}'
-    return message.to
+    message_status_output = f'<h3>Status for message SID: {message.sid}' \
+            f'Delivery status: {message.status}' \
+            f'Any errors: {message.error_code}</h3>'
+    return message_status_output
 
 @app.route('/webhook', methods=['GET', 'POST'])
 def sms_ahoy_reply():
@@ -88,6 +90,11 @@ def sms_ahoy_reply():
     message.body('_Spam_ is, therefore _I_ am.')
     resp.append(message)
     return str(resp)
+
+@app.route('/webhook-status', methods=['GET', 'POST'])
+def hookup_status():
+    print('hooked')
+    return 'hooked'
 
 @app.route('/whatsapp')
 def show_form_for_whatsapp():
@@ -125,7 +132,6 @@ def send_whatsapp_media():
          media_url=[special_pic_one],
          from_='whatsapp:+14155238886',
          body="I don't like spam!",
-         status_callback=POSTBIN_ENDPOINT,
          to=f'whatsapp:{phone}'
      )
     return message.status

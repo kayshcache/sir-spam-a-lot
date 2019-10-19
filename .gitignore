@@ -107,3 +107,5 @@ venv.bak/
 .mypy_cache/
 .app.py.swp
 .classes.py.swp
+app/.__init__.py.swo
+app/.__init__.py.swp
