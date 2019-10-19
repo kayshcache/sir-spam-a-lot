@@ -98,10 +98,11 @@ def show_form_for_whatsapp():
 def send_whatsapp_message():
     """Receive form POST information for media message.""" 
     message_body = '~Spam~'
+    phone = request.form['text']
     message_data = {
         'WhatsApp': True,
         'Body': message_body,
-        'To': request.form['text'],
+        'To': phone
         }
     response = my_twilio_client.post_message(message_data)
     return
@@ -125,7 +126,7 @@ def send_whatsapp_media():
          from_='whatsapp:+14155238886',
          body="I don't like spam!",
          status_callback=POSTBIN_ENDPOINT,
-         to='whatsapp:{phone}'
+         to=f'whatsapp:{phone}'
      )
     return message.status
 
