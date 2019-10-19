@@ -87,7 +87,7 @@ def sms_ahoy_reply():
     message.media(special_pic_two)
     message.body('_Spam_ is, therefore _I_ am.')
     resp.append(message)
-    return
+    return str(resp)
 
 @app.route('/whatsapp')
 def show_form_for_whatsapp():
