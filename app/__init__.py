@@ -102,7 +102,7 @@ def hookup_status():
     status = request.values['MessageStatus']
     set_last_message_status(status)
     print(status)
-    return 'no spam here'
+    return 'no ham here'
 
 @app.route('/whatsapp')
 def show_form_for_whatsapp():
