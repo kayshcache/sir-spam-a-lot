@@ -1,7 +1,8 @@
 # /usr/bin/env python
 
 import os
-from flask import Flask, request
+from flask import Flask, request, redirect
+from time import sleep as snooZZZe
 from twilio.twiml.messaging_response import Body, Media, Message, MessagingResponse
 from twilio.rest import Client
 from .classes import TwilioClient
@@ -17,7 +18,7 @@ my_twilio_client = TwilioClient(account_sid, auth_token)# My handmade client cla
 client = Client(account_sid, auth_token) # Does same and more, from Twilio REST API Package
 special_pic_one = os.environ['SPECIAL_ONE']
 special_pic_two = os.environ['SPECIAL_TWO']
-STATUS_WEBHOOK = 'https://45c8e5a2.ngrok.io/webhook-status'
+STATUS_WEBHOOK = 'https://98497678.ngrok.io/webhook-status'
 
 def give_me_form():
     """Function for making the form
@@ -43,7 +44,7 @@ def check_error_code(twilio_error_code):
     return (False, error_message)
 
 @app.route('/')
-def display_homepage():
+def display_homepage(sid=None):
     """Homepage displays debugging stuff and other stuff"""
     html = '<h1>Hello from The Royal Court of Spamelot</h1>' \
             '<h2>Below form can send a generic message</h2>' \
@@ -55,6 +56,7 @@ def display_homepage():
             'Please go <a href="/whatsapp-media">here</a> to get some spam.</p>' + \
             give_me_form()
     messages = client.messages.list(limit=20)
+    print(request.args.get('sid'))
     list_items = map(lambda record:
             f'<li>{record.sid}: {record.status}, {record.error_code}</li>',
             messages)
@@ -78,7 +80,11 @@ def post_form():
     message_status_output = f'<h3>Status for message SID: {message.sid}' \
             f'Delivery status: {message.status}' \
             f'Any errors: {message.error_code}</h3>'
-    return message_status_output
+    # snooZZZe(1)
+#   print(status)
+    # print(message.__dict__)
+    sid = message.sid
+    return redirect(f"/?sid={message.sid}")
 
 @app.route('/webhook', methods=['GET', 'POST'])
 def sms_ahoy_reply():
@@ -93,8 +99,10 @@ def sms_ahoy_reply():
 
 @app.route('/webhook-status', methods=['GET', 'POST'])
 def hookup_status():
-    print('hooked')
-    return 'hooked'
+    status = request.values['MessageStatus']
+    set_last_message_status(status)
+    print(status)
+    return 'no spam here'
 
 @app.route('/whatsapp')
 def show_form_for_whatsapp():
