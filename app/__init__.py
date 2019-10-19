@@ -132,8 +132,9 @@ def post_whatsapp_message():
         'To': phone
         }
     response = my_twilio_client.post_message(message_data)
-    print(response.text)
-    return redirect('/')
+
+    print(response)
+    return redirect(f'/?sid={response.text[9:43]}')
 
 if __name__ == '__main__':
   app.run(debug=True)

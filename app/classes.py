@@ -56,14 +56,3 @@ class TwilioClient:
         return response
 
 
-class HtmlCssBuilder:
-    """Class for producing bits of HTML & CSS"""
-    def __init__(self):
-        pass
-
-
-class MessageHandler:
-    """Class for generating messages of all kinds"""
-    def __init__(self):
-        pass
-
