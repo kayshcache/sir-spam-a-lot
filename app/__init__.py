@@ -8,8 +8,6 @@ from .classes import TwilioClient
 
 app = Flask(__name__)
 
-POSTBIN_ENDPOINT = 'https://postb.in/1571411865319-0266059697605'
-
 """Global Objects & Constants"""
 account_sid = environ['TWILIO_ACCOUNT_SID']
 auth_token = environ['TWILIO_AUTH_TOKEN']
@@ -51,7 +49,7 @@ def display_homepage():
     """Homepage displays debugging stuff and other stuff
 
     Arguments:
-        sid: String
+        sid: String passed back by get request
     """
     messages = client.messages.list(limit=20)
     error_message = None
