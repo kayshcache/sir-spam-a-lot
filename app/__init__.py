@@ -4,6 +4,7 @@ from os import environ
 from flask import Flask, request, redirect
 from twilio.twiml.messaging_response import Body, Media, Message, MessagingResponse
 from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
 from .classes import TwilioClient
 
 app = Flask(__name__)
@@ -53,8 +54,14 @@ def display_homepage():
     """
     messages = client.messages.list(limit=20)
     error_message = None
+    print(request.args.get('status'))
+    print(request.args.get('sid'))
+    if request.args.get('status') == 'bad-phone-error':
+        error_message = f'{request.args.get("phone")}', \
+                f': is not a valid phone number.'
+    print(error_message)
     for msg in messages:
-        if msg.sid == request.args.get('sid'):
+        if msg.sid == request.args.get('sid'): # If redirected
             error_message = check_error_code(msg.error_code)
     html = '<h1>Hello from The Royal Court of Spamelot</h1>' \
             '<h2>Below form can send a generic message</h2>' \
@@ -76,20 +83,21 @@ def display_homepage():
 def post_message_for_homepage():
     """Receive the phone number from the form and POST the message."""
     phone = request.form['text']
-    message = client.messages \
-    .create(
-         from_='whatsapp:+14155238886',
-         body='Hi Joe! Thanks for placing an order with us.' \
-                 ' We’ll let you know once your order has been' \
-                 ' processed and delivered. Your order number is O12235234',
-         status_callback=STATUS_WEBHOOK,
-         to=f'whatsapp:{phone}'
-     )
-    message_status_output = f'<h3>Status for message SID: {message.sid}' \
-            f'Delivery status: {message.status}' \
-            f'Any errors: {message.error_code}</h3>'
-    sid = message.sid
-    return redirect(f"/?sid={message.sid}")
+    sid = None
+    status = None
+    try:
+        message = client.messages.create(
+                from_='whatsapp:+14155238886',
+                body='Hi Joe! Thanks for placing an order with us.' \
+                        ' We’ll let you know once your order has been' \
+                        ' processed and delivered. Your order number is O12235234',
+                status_callback=STATUS_WEBHOOK,
+                to=f'whatsapp:{phone}'
+                )
+        sid = message.sid
+    except TwilioRestException as e:
+        status = 'bad-phone-error'
+    return redirect(f'/?sid={sid}&status={status}&phone={phone}')
 
 @app.route('/webhook', methods=['GET', 'POST'])
 def post_message_media_webhook():
