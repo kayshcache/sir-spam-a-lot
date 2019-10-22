@@ -132,15 +132,15 @@ def post_whatsapp_message():
     """Receive form POST information for media message."""
     message_body = '~Spam~'
     phone = request.form['text']
+    status = None
     message_data = {
         'WhatsApp': True,
         'Body': message_body,
         'To': phone
         }
     response = my_twilio_client.post_message(message_data)
-
-    print(response)
-    return redirect(f'/?sid={response.text[9:43]}')
+    print(response.__dict__['_content'])
+    return redirect(f'/?sid={response.text[9:43]}&status={status}&phone={phone}')
 
 if __name__ == '__main__':
   app.run(debug=True)
