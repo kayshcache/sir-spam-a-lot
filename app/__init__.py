@@ -71,7 +71,7 @@ def display_homepage():
     if error_message is not None:
         html += f'<strong>WARNING: {error_message}</strong>'
     html += give_me_form()
-    html += '<a href="/whatsapp">Send yourself something nice.>'
+    html += '<a href="/whatsapp">Send yourself something nice.</a>'
     list_items = map(lambda record:
             f'<li>{record.sid}: {record.status}, {record.error_code}</li>',
             messages)
