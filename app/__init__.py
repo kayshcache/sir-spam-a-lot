@@ -63,7 +63,7 @@ def display_homepage():
     for msg in messages:
         if msg.sid == request.args.get('sid'): # If redirected
             error_message = check_error_code(msg.error_code)
-    html = '<h1>Hello from The Royal Court of Spamelot</h1>' \
+    html = '<h1>Salutations from The Royal Court of Spamelot</h1>' \
             '<h2>Below form can send a generic message</h2>' \
             '<p><a href="whatsapp://send?phone=+14155238886' \
             '&text=join%20scientific-parallel">You must join ' \
