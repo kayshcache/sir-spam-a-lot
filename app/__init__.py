@@ -29,7 +29,7 @@ def give_me_form():
     style_html = '<style>input' \
             '{width: 100%; max-width: 500px; box-sizing: border-box;' \
             'display: block; margin: 0; height: 60px; line-height: 60px;' \
-            'font-size: 20px; border: 3px solid pink;}' \
+            'font-size: 20px; background-color: pink; border: 3px solid pink;}' \
             '</style>'
     form_html = '<form method="POST"><input class="form-input" name="text"' \
             'placeholder="E164 formatted phone number, eg. +61400666666">' \
